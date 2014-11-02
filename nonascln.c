@@ -8,7 +8,7 @@
 static int
 has_nonascii(const char* lin, ssize_t r) {
   while (r-- > 0) {
-    if (lin[r] == 0 || lin[r] & 0x80) {
+    if (lin[r] & 0x80) {
       return 1;
     }
   }
