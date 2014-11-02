@@ -4,6 +4,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+char* argv0;
+
+const char* descr =
+  "Reads lines from standard input, printing any that contain characters\n"
+  "with the high bit set.\n";
+
+static void
+usage() {
+  fprintf(stderr, "Usage: %s\n%s", argv0, descr);
+  exit(EXIT_FAILURE);
+}
+
 static int
 has_nonascii(const char* lin, ssize_t len) {
   while (len-- > 0) {
@@ -15,10 +27,15 @@ has_nonascii(const char* lin, ssize_t len) {
 }
 
 int
-main() {
+main(int argc, char* argv[]) {
   char*   lin;
   size_t  len;
   ssize_t ret;
+
+  argv0 = argv[0];
+  if (argc != 1) {
+    usage();
+  }
 
   len = 256;
   lin = malloc(len);
