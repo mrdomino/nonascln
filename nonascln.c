@@ -6,12 +6,11 @@
 #include <stdlib.h>
 
 static int
-has_nonascii(const char* lin) {
-  while (*lin != '\0') {
-    if (*lin & 0x80) {
+has_nonascii(const char* lin, ssize_t r) {
+  while (r-- > 0) {
+    if (lin[r] == 0 || lin[r] & 0x80) {
       return 1;
     }
-    lin++;
   }
   return 0;
 }
@@ -20,6 +19,7 @@ int
 main() {
   char*   lin;
   size_t  len;
+  ssize_t r;
 
   len = 256;
   lin = malloc(len);
@@ -27,8 +27,8 @@ main() {
     len = 0;
   }
 
-  while (-1 != getline(&lin, &len, stdin)) {
-    if (has_nonascii(lin)) {
+  while (-1 != (r = getline(&lin, &len, stdin))) {
+    if (has_nonascii(lin, r)) {
       printf("%s", lin);
     }
   }
