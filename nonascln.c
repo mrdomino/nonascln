@@ -26,16 +26,11 @@ has_nonascii(const char* lin, ssize_t len) {
   return 0;
 }
 
-int
-main(int argc, char* argv[]) {
+static int
+nonascln(FILE* in, FILE* out) {
   char*   lin;
   size_t  len;
   ssize_t ret;
-
-  argv0 = argv[0];
-  if (argc != 1) {
-    usage();
-  }
 
   len = 256;
   lin = malloc(len);
@@ -43,16 +38,30 @@ main(int argc, char* argv[]) {
     len = 0;
   }
 
-  while (-1 != (ret = getline(&lin, &len, stdin))) {
+  while (-1 != (ret = getline(&lin, &len, in))) {
     if (has_nonascii(lin, ret)) {
-      printf("%s", lin);
+      fprintf(out, "%s", lin);
     }
   }
 
   free(lin);
 
   if (0 != errno) {
-    err(EXIT_FAILURE, "getline");
+    return -1;
+  }
+  else return 0;
+}
+
+int
+main(int argc, char* argv[]) {
+  argv0 = argv[0];
+
+  if (argc != 1) {
+    usage();
+  }
+
+  if (-1 == nonascln(stdin, stdout)) {
+    err(EXIT_FAILURE, "nonascln");
   }
   return 0;
 }
