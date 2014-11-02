@@ -27,10 +27,11 @@ has_nonascii(const char* lin, ssize_t len) {
 }
 
 static int
-nonascln(FILE* in, FILE* out) {
+nonascln(FILE* out, FILE* in) {
   char*   lin;
   size_t  len;
   ssize_t ret;
+  int     err;
 
   len = 256;
   lin = malloc(len);
@@ -43,10 +44,12 @@ nonascln(FILE* in, FILE* out) {
       fprintf(out, "%s", lin);
     }
   }
+  err = errno;
 
   free(lin);
 
-  if (0 != errno) {
+  if (0 != err) {
+    errno = err;
     return -1;
   }
   else return 0;
@@ -60,7 +63,7 @@ main(int argc, char* argv[]) {
     usage();
   }
 
-  if (-1 == nonascln(stdin, stdout)) {
+  if (-1 == nonascln(stdout, stdin)) {
     err(EXIT_FAILURE, "nonascln");
   }
   return 0;
