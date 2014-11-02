@@ -32,10 +32,11 @@ main() {
       printf("%s", lin);
     }
   }
+
+  free(lin);
+
   if (0 != errno) {
     err(EXIT_FAILURE, "getline");
   }
-
-  free(lin);
   return 0;
 }
