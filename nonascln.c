@@ -4,14 +4,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-char* argv0;
-
-const char* descr =
+static const char* descr =
   "Reads lines from standard input, printing any that contain characters\n"
-  "with the high bit set.\n";
+  "outside the 7-bit ASCII range.\n";
 
 static void
-usage() {
+usage(const char* argv0) {
   fprintf(stderr, "Usage: %s\n%s", argv0, descr);
   exit(EXIT_FAILURE);
 }
@@ -57,10 +55,8 @@ nonascln(FILE* out, FILE* in) {
 
 int
 main(int argc, char* argv[]) {
-  argv0 = argv[0];
-
-  if (argc != 1) {
-    usage();
+  if (argc > 1) {
+    usage(argv[0]);
   }
 
   if (-1 == nonascln(stdout, stdin)) {
