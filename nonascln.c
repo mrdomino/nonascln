@@ -48,14 +48,13 @@ nonascln(FILE* out, FILE* in, int countfrom) {
     len = 0;
   }
 
-  /* XXX getline truncates to the first null, so we miss lines like "\0\x80" */
   while (-1 != (ret = getline(&lin, &len, in))) {
     assert(lin != 0);
     if (has_nonascii(lin, ret)) {
       if (countfrom >= 0) {
-        fprintf(out, "%6d\t%s", countfrom, lin);
+        fprintf(out, "%6d\t", countfrom);
       }
-      else fprintf(out, "%s", lin);
+      fwrite(lin, 1, ret, out);
     }
     if (countfrom >= 0) {
       countfrom++;
