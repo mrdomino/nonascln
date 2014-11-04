@@ -1,6 +1,5 @@
 #define _POSIX_C_SOURCE 200809L
 #include <assert.h>
-#include <err.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -86,8 +85,9 @@ main(int argc, char* argv[]) {
   }
 
   if (optind == argc - 1) {
-    if (0 == (in = fopen(argv[optind], "r"))) {
-      err(EXIT_FAILURE, "fopen");
+    if (NULL == (in = fopen(argv[optind], "r"))) {
+      perror("fopen");
+      exit(EXIT_FAILURE);
     }
   }
   else if (optind != argc) {
@@ -95,7 +95,12 @@ main(int argc, char* argv[]) {
   }
 
   if (-1 == nonascln(stdout, in, countfrom)) {
-    err(EXIT_FAILURE, "nonascln");
+    perror("nonascln");
+    exit(EXIT_FAILURE);
+  }
+
+  if (EOF == fclose(in)) {
+    perror("fclose");
   }
   return 0;
 }
