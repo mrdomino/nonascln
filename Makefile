@@ -4,3 +4,5 @@ all: nonascln
 
 clean:
 	-rm nonascln
+
+.PHONY: all clean
