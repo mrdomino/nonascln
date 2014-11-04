@@ -17,6 +17,10 @@ usage(const char* argv0) {
   exit(EXIT_FAILURE);
 }
 
+/*
+ * Returns nonzero iff one of the first len characters in lin has its 8th bit
+ * set.
+ */
 static int
 has_nonascii(const char* lin, ssize_t len) {
   while (len-- > 0) {
@@ -28,7 +32,7 @@ has_nonascii(const char* lin, ssize_t len) {
 }
 
 /*
- * Selectively print lines from in containing 8th-bit-on characters to out,
+ * Selectively prints lines from in containing 8th-bit-on characters to out,
  * with line counts starting at countfrom if countfrom is non-negative.
  */
 static int
