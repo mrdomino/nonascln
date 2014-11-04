@@ -25,8 +25,12 @@ has_nonascii(const char* lin, ssize_t len) {
   return 0;
 }
 
+/*
+ * Selectively print lines from in containing 8th-bit-on characters to out,
+ * with line counts starting at countfrom if countfrom is non-negative.
+ */
 static int
-nonascln(FILE* out, FILE* in) {
+nonascln(FILE* out, FILE* in, int countfrom) {
   char*   lin;
   size_t  len;
   ssize_t ret;
@@ -41,7 +45,13 @@ nonascln(FILE* out, FILE* in) {
   while (-1 != (ret = getline(&lin, &len, in))) {
     assert(lin != 0);
     if (has_nonascii(lin, ret)) {
-      fprintf(out, "%s", lin);
+      if (countfrom >= 0) {
+        fprintf(out, "%6d\t%s", countfrom, lin);
+      }
+      else fprintf(out, "%s", lin);
+    }
+    if (countfrom >= 0) {
+      countfrom++;
     }
   }
   err = errno;
@@ -61,7 +71,7 @@ main(int argc, char* argv[]) {
     usage(argv[0]);
   }
 
-  if (-1 == nonascln(stdout, stdin)) {
+  if (-1 == nonascln(stdout, stdin, 1)) {
     err(EXIT_FAILURE, "nonascln");
   }
   return 0;
