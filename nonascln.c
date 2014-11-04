@@ -4,14 +4,17 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 static const char* descr =
-  "Reads lines from standard input, printing any that contain characters\n"
-  "outside the 7-bit ASCII range.\n";
+  "Reads lines from standard input or file, printing any that contain\n"
+  "characters outside the 7-bit ASCII range.\n\n"
+  "Flags:\n"
+  "-n\tPrints line numbers\n";
 
 static void
 usage(const char* argv0) {
-  fprintf(stderr, "Usage: %s\n%s", argv0, descr);
+  fprintf(stderr, "Usage: %s [-n] [file]\n%s", argv0, descr);
   exit(EXIT_FAILURE);
 }
 
@@ -67,11 +70,31 @@ nonascln(FILE* out, FILE* in, int countfrom) {
 
 int
 main(int argc, char* argv[]) {
-  if (argc > 1) {
+  int r;
+  int countfrom = -1;
+  FILE* in = stdin;
+
+  opterr = 0;
+  while (-1 != (r = getopt(argc, argv, "+n"))) {
+    switch (r) {
+    case 'n':
+      countfrom = 1;
+      break;
+    default:
+      usage(argv[0]);
+    }
+  }
+
+  if (optind == argc - 1) {
+    if (0 == (in = fopen(argv[optind], "r"))) {
+      err(EXIT_FAILURE, "fopen");
+    }
+  }
+  else if (optind != argc) {
     usage(argv[0]);
   }
 
-  if (-1 == nonascln(stdout, stdin, 1)) {
+  if (-1 == nonascln(stdout, in, countfrom)) {
     err(EXIT_FAILURE, "nonascln");
   }
   return 0;
