@@ -1,4 +1,5 @@
 #define _POSIX_C_SOURCE 200809L
+#include <assert.h>
 #include <err.h>
 #include <errno.h>
 #include <stdio.h>
@@ -17,7 +18,7 @@ usage(const char* argv0) {
 static int
 has_nonascii(const char* lin, ssize_t len) {
   while (len-- > 0) {
-    if (lin[len] & 0x80) {
+    if ((char)0 != (lin[len] & 0x80)) {
       return 1;
     }
   }
@@ -32,12 +33,13 @@ nonascln(FILE* out, FILE* in) {
   int     err;
 
   len = 256;
-  lin = malloc(len);
+  lin = calloc(1, len);
   if (0 == lin) {
     len = 0;
   }
 
   while (-1 != (ret = getline(&lin, &len, in))) {
+    assert(lin != 0);
     if (has_nonascii(lin, ret)) {
       fprintf(out, "%s", lin);
     }
