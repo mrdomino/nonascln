@@ -48,6 +48,7 @@ nonascln(FILE* out, FILE* in, int countfrom) {
     len = 0;
   }
 
+  /* XXX getline truncates to the first null, so we miss lines like "\0\x80" */
   while (-1 != (ret = getline(&lin, &len, in))) {
     assert(lin != 0);
     if (has_nonascii(lin, ret)) {
