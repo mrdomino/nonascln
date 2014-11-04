@@ -22,7 +22,7 @@ usage(const char* argv0) {
  * set.
  */
 static int
-has_nonascii(const char* lin, ssize_t len) {
+has_nonascii(const char* lin, size_t len) {
   while (len-- > 0) {
     if ((char)0 != (lin[len] & 0x80)) {
       return 1;
@@ -49,17 +49,28 @@ nonascln(FILE* out, FILE* in, int countfrom) {
   }
 
   while (-1 != (ret = getline(&lin, &len, in))) {
+    size_t red;
+
     assert(lin != 0);
-    if (has_nonascii(lin, ret)) {
+    assert(ret >= 0);
+    red = (size_t)ret;
+    if (has_nonascii(lin, red)) {
       if (countfrom >= 0) {
-        fprintf(out, "%6d\t", countfrom);
+        if (-1 == fprintf(out, "%6d\t", countfrom)) {
+          assert(errno != 0);
+          goto out;
+        }
       }
-      fwrite(lin, 1, ret, out);
+      if (red != fwrite(lin, 1, red, out)) {
+        assert(errno != 0);
+        goto out;
+      }
     }
     if (countfrom >= 0) {
       countfrom++;
     }
   }
+out:
   err = errno;
 
   free(lin);
