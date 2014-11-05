@@ -24,7 +24,7 @@ usage(const char* argv0) {
 static int
 has_nonascii(const char* lin, size_t len) {
   while (len-- > 0) {
-    if ((char)0 != (lin[len] & 0x80)) {
+    if ((char)0 != (*lin++ & 0x80)) {
       return 1;
     }
   }
